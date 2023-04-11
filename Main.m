@@ -55,7 +55,7 @@ for Run=1:1
         end
         parent=Rep;
         
-        if FEs > Max_FEs*3/5
+        if sum(Rep(:,end)) == 0
             frep=[Rep;frep];
             frep_temp = frep(:,1:D);
             [frep1,frep_r,frep_c] = unique(frep_temp,'rows');
@@ -99,8 +99,8 @@ for Run=1:1
     PopObj=[ob1(Run,:)' ob2(Run,:)'];
     score(Run) = HV(PopObj);
    
-    disp(['HV value£º',num2str(score(Run))]); 
+    disp(['HV valueÂ£Âº',num2str(score(Run))]); 
 end
 
 TVs=sum(rep_all(:,end));
-disp(['TVs£º',num2str(TVs)]);
+disp(['TVsÂ£Âº',num2str(TVs)]);
