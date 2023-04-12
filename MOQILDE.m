@@ -1,10 +1,7 @@
 function [TempPop,gen]=MOQILDE(gen,m,d,MaxParValue,MinParValue,parent,M)
 
 Population=parent;
-parentval= ((max(parent(:,d+1))-parent(:,d+1))/(max(parent(:,d+1))-min(parent(:,d+1)))+(max(parent(:,d+1))-parent(:,d+M))/(max(parent(:,d+M))-min(parent(:,d+M))))/2;
-% jl=(max(parent(:,d+1))-parent(:,d+1))/(max(parent(:,d+1))-min(parent(:,d+1)))+(max(parent(:,d+M))-parent(:,d+M))/(max(parent(:,d+M))-min(parent(:,d+M)));
-% [~,wz1]=sort(jl);
-% wz=wz1(end);
+parentval= (parent(:,d+1)/max(parent(:,d+1))+parent(:,d+M)/max(parent(:,d+M)))/2;
 
 gen = gen + 1;
 
