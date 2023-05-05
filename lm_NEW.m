@@ -1,13 +1,12 @@
 function f = lm_NEW(Q,M,ncon,Pimax,Pimin)
-% function [x,f,error] = lm_NEW(Q)
 [N,D]=size(Q);
-K = D+M+3;% Î¬¶È Ä¿±êÊı ÅÅĞò 
-f = zeros(N,K+ncon);% ¸öÊıÎ¬¶È Ä¿±êÊı  ÅÅĞò  ³Í·£Êı
+K = D+M+3;% ç»´åº¦ ç›®æ ‡æ•° æ’åº 
+f = zeros(N,K+ncon);% ä¸ªæ•°ç»´åº¦ ç›®æ ‡æ•°  æ’åº  æƒ©ç½šæ•°
 
-%%%%%%%%³±Á÷¼ÆËã%%%%%%%%
+%%%%%%%%æ½®æµè®¡ç®—%%%%%%%%
 global SP1 SP2 SP3 nbins mcarlo 
 
-%%%»ğÁ¦»ú×é%%%
+%%%ç«åŠ›æœºç»„%%%
 % bus_no. alpha beta gama omega miu d e Pmin POZL1 POZH1 POZL2 POZH2
  thgendata = [
  	1	0.04091 -0.05554 0.06490 0.000200 6.667 18 0.037 50 0 0 0 0;
@@ -24,35 +23,17 @@ for i=1:N
                 Q(i,k)=Q(i,k);
             end
     end
-
-% %%%½ûÖ¹ÔËĞĞÇø%%%
-% % for i=1:N
-%     %%%ÏµÍ³1%%%
-%     if Q(i,1)>thgendata(2,10) && Q(i,1)<thgendata(2,11)
-%         temp = round((Q(i,1)-thgendata(2,10))/(thgendata(2,11)-thgendata(2,10)));
-%         Q(i,1) = thgendata(2,10);
-%         if temp == 1
-%             Q(i,1) = thgendata(2,11);
-%         end
-%     end
-%     if Q(i,1)>thgendata(2,12) && Q(i,1)<thgendata(2,13)
-%         temp = round((Q(i,1)-thgendata(2,12))/(thgendata(2,13)-thgendata(2,12)));
-%         Q(i,1) = thgendata(2,12);
-%         if temp == 1
-%             Q(i,1) = thgendata(2,13);
-%         end
-%     end
 end
 
-%%%³±Á÷%%%
+%%%æ½®æµ%%%
 for i=1:N
 data = loadcase('case30_S');
-data.gen(2:6,2)= Q(i,1:5);%¹¦ÂÊ %»ğ ·ç »ğ ¹â ·ç
-data.gen(1:6,6) = Q(i,6:11);%µçÑ¹Æ«²î
+data.gen(2:6,2)= Q(i,1:5);
+data.gen(1:6,6) = Q(i,6:11);%ç”µå‹åå·®
 
 mpopt = mpoption('pf.enforce_q_lims',0,'verbose',0,'out.all',0);
 result = runpf(data,mpopt);
-QH1(i)=result.gen(1,2)';%Æ½ºâ½Úµã1¹¦ÂÊ
+QH1(i)=result.gen(1,2)';
 
 S1(:,i)=result.branch(:,14);
 S2(:,i)=result.branch(:,15);
@@ -63,9 +44,9 @@ VII(:,i) = result.bus(:,8);
 QG(:,i) = result.gen(:,3)/data.baseMVA;
 end
 
-%%%»ğµç
+%%%ç«ç”µ
 for i=1:N
-thpowgen(i,:) = [QH1(i),Q(i,1),Q(i,3)];%»ğ ¹â »ğ ¹â ¹â
+thpowgen(i,:) = [QH1(i),Q(i,1),Q(i,3)];
 
 thgencoeff = vertcat(data.gencost(1:2,5:7),data.gencost(4,5:7));
 
@@ -74,11 +55,11 @@ end
 
 
 for i=1:N
-%%%¹â·üµçÕ¾1
+%%%å…‰ä¼ç”µç«™1
 sgenpar = [1   11  1.60];
 Crsj = 3; % Reserve cost for solar power overestimation ($/MW)
 Cpsj = 1.4; % Penalty cost for solar power underestimation ($/MW)
-schspow = [Q(i,2)]; % solar generator schedule power %»ğ ·ç »ğ ¹â ·ç
+schspow = [Q(i,2)]; % solar generator schedule power %ç« é£ ç« å…‰ é£
 % Segregate over and underestimated power on the power histogram
 [~,JJ]=size(schspow);
 [histy1,histx1] = hist(SP1,nbins);
@@ -99,11 +80,11 @@ sovundcost = [C1und;C1over];
 sgencosta(i,:)= sgenpar(3)*schspow+sum(sovundcost,1); % solar generator cost
 sgencost1(i)=sum(sgencosta(i,:),2)';
 
-%%%¹â·üµçÕ¾2
+%%%å…‰ä¼ç”µç«™2
 sgenpar = [1   11  1.60];
 Crsj = 3; % Reserve cost for solar power overestimation ($/MW)
 Cpsj = 1.4; % Penalty cost for solar power underestimation ($/MW)
-schspow = [Q(i,4)]; % solar generator schedule power %»ğ ·ç »ğ ¹â ·ç
+schspow = [Q(i,4)]; % solar generator schedule power %ç« é£ ç« å…‰ é£
 % Segregate over and underestimated power on the power histogram
 [~,JJ]=size(schspow);
 [histy1,histx1] = hist(SP2,nbins);
@@ -124,11 +105,11 @@ sovundcost = [C1und;C1over];
 sgencosta(i,:)= sgenpar(3)*schspow+sum(sovundcost,1); % solar generator cost
 sgencost2(i)=sum(sgencosta(i,:),2)';
 
-%%%¹â·üµçÕ¾3
+%%%å…‰ä¼ç”µç«™3
 sgenpar = [1   11  1.60];
 Crsj = 3; % Reserve cost for solar power overestimation ($/MW)
 Cpsj = 1.4; % Penalty cost for solar power underestimation ($/MW)
-schspow = [Q(i,5)]; % solar generator schedule power %»ğ ·ç »ğ ¹â ·ç
+schspow = [Q(i,5)]; % solar generator schedule power %ç« é£ ç« å…‰ é£
 % Segregate over and underestimated power on the power histogram
 [~,JJ]=size(schspow);
 [histy1,histx1] = hist(SP3,nbins);
@@ -150,9 +131,9 @@ sgencosta(i,:)= sgenpar(3)*schspow+sum(sovundcost,1); % solar generator cost
 sgencost3(i)=sum(sgencosta(i,:),2)';
 end
 
-%%%Ô¼Êø%%%
+%%%çº¦æŸ%%%
 for i=1:N
-%¹¦ÂÊÔ¼Êø%
+%åŠŸç‡çº¦æŸ%
 PGSmax = data.gen(:,9)';
 PGSmin = data.gen(:,10)';
 PGS(i,:) = [QH1(i),Q(i,1:5)];
@@ -160,15 +141,15 @@ PGS(i,:) = [QH1(i),Q(i,1:5)];
 for j=1:6
 PG(i,j) = (PGS(i,j)<PGSmin(j))*(abs(PGSmin(j)-PGS(i,j))/(PGSmax(j)-PGSmin(j)))+(PGS(i,j)>PGSmax(j))*(abs(PGSmax(j)-PGS(i,j))/(PGSmax(j)-PGSmin(j)));
 end
-% PGSerr(i)=sum([PG(i,:),PJZ(i)])';%Ô½½ç³Í·£
-PGSerr(i)=sum([PG(i,:)])';%Ô½½ç³Í·£
+% PGSerr(i)=sum([PG(i,:),PJZ(i)])';%è¶Šç•Œæƒ©ç½š
+PGSerr(i)=sum([PG(i,:)])';%è¶Šç•Œæƒ©ç½š
 
-%ÏßÂ·¹¦ÂÊÔ¼Êø%
-blimit = data.branch(:,6);%Ö§Â·³¤ÆÚÔÊĞí¹¦ÂÊ
+%çº¿è·¯åŠŸç‡çº¦æŸ%
+blimit = data.branch(:,6);%æ”¯è·¯é•¿æœŸå…è®¸åŠŸç‡
 Slimit(:,i) = sqrt(S1(:,i).^2+S2(:,i).^2);
 Serr(i) = sum((Slimit(:,i)>blimit).*abs(blimit-Slimit(:,i)))/data.baseMVA;
 
-%µçÑ¹Ô¼Êø%
+%ç”µå‹çº¦æŸ%
 genbus = data.gen(:,1);
 VI=VII(:,i);
 VI(genbus)=[];
@@ -177,43 +158,38 @@ Vmin=data.bus(:,13);
 Vmax(genbus)=[];
 Vmin(genbus)=[];
 VIerr(i) = sum((VI<Vmin).*(abs(Vmin-VI)./(Vmax-Vmin))+(VI>Vmax).*(abs(Vmax-VI)./(Vmax-Vmin)));
-VD(i)=sum(abs(VI-1));%µçÑ¹Æ«²î
+VD(i)=sum(abs(VI-1));%ç”µå‹åå·®
 
-%ÎŞ¹¦¹¦ÂÊÔ¼Êø%
+%æ— åŠŸåŠŸç‡çº¦æŸ%
 Qmax = data.gen(:,4)/data.baseMVA;
 Qmin = data.gen(:,5)/data.baseMVA;
 Qerr(i) = sum((QG(:,i)<Qmin).*(abs(Qmin-QG(:,i))./(Qmax-Qmin))+(QG(:,i)>Qmax).*(abs(Qmax-QG(:,i))./(Qmax-Qmin)));
 
-%·§µãĞ§Ó¦%
+%é˜€ç‚¹æ•ˆåº”%
 valveff(i) = sum(abs(thgendata(:,7).*sin(thgendata(:,8).*(thgendata(:,9)-thpowgen(i,:)')))); % if all have valve effects
 
 
 end
-% ploss = sum(result.branch(:,14)+result.branch(:,16));%ÍøËğ
-% loss=get_losses(result)È«²¿ËğºÄ£¨ÊµĞé£©real imag
 
-ploss = sum(S1+S3);%ÍøËğ
+ploss = sum(S1+S3);%ç½‘æŸ
 
-error = [Qerr' VIerr' Serr' PGSerr'];%error = [Qerr;VIerr;Serr;PGSerr];¡ª¡ª·£º¯Êı
+error = [Qerr' VIerr' Serr' PGSerr'];%error = [Qerr;VIerr;Serr;PGSerr];â€”â€”ç½šå‡½æ•°
 
-%%%%%³É±¾¼ÆËã%%%%%
+%%%%%æˆæœ¬è®¡ç®—%%%%%
 cumcost=thgencost+valveff+sgencost1+sgencost2+sgencost3;
 
-% %%%%ÎÛÈ¾ÅÅ·Å¼ÆËã%%%%
+% %%%%æ±¡æŸ“æ’æ”¾è®¡ç®—%%%%
 emission = sum(thgendata(:,2)+thgendata(:,3).*thpowgen'/100+thgendata(:,4).*(thpowgen.^2/100^2)'...
      +thgendata(:,5).*exp(thgendata(:,6).*thpowgen'/100));
 
 
-     z1 = cumcost';%³É±¾ %%·£º¯Êıµ¼ÖÂËÑÑ°µãÌ«ÉÙ
-     z2 = emission';%ÎÛÈ¾ÅÅ·Å
+     z1 = cumcost';%æˆæœ¬ %%ç½šå‡½æ•°å¯¼è‡´æœå¯»ç‚¹å¤ªå°‘
+     z2 = emission';%æ±¡æŸ“æ’æ”¾
 
 % z3 = ploss';
  
 f(:,1:D)=Q;
 f(:,D+1:D+M)=[z1,z2];
 f(:,D+M+4:end)=error;
-% f=[Q,z1',z2']; %°üº¬Á½¸öÄ¿±êÖµ
-% p=cumcost'; % µ¥Ä¿±ê
 
-%  x=Q;
   end
